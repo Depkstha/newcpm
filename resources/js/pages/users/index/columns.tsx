@@ -1,7 +1,8 @@
-import { ColumnDef } from "@tanstack/react-table"
-
-import { MoreHorizontal, ArrowUpDown } from "lucide-react"
-
+import { User } from "@/types";
+import { ColumnDef } from "@tanstack/react-table";
+import { MoreHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -10,19 +11,8 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { DataTableColumnHeader } from "@/components/column-header"
-import { DataTableViewOptions } from "@/components/data-table-view-options"
-
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export type User = {
-    id: number
-    name: String
-    // status: "active" | "inactive"
-    email: string
-}
+import { DataTableColumnHeader } from "@/components/data-table-column-header-sort";
+import { DataTableColumnHeaderSimple } from "@/components/data-table-column-header-simple-sort";
 
 export const columns: ColumnDef<User>[] = [
     {
@@ -49,36 +39,25 @@ export const columns: ColumnDef<User>[] = [
     },
     {
         accessorKey: "name",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Name
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
+        header: ({ column }) => (
+            <DataTableColumnHeaderSimple column={column} title="Name" />
+        )
     },
     {
         accessorKey: "email",
-        header: ({ column }) => (
-            <DataTableColumnHeader column={column} title="Email" />
-        ),
+        header: ({ column }) => {
+            return (
+                <DataTableColumnHeader column={column} title="Email" />
+            )
+        }
     },
     {
-        id: "select",
-        header: ({ table }) => (
-            <DataTableViewOptions table={table} />
-        ),
-        enableSorting: false,
-        enableHiding: false,
+        accessorKey: "status",
+        header: "Status"
     },
-
     {
         id: "actions",
-        cell({ row }) {
+        cell: ({ row }) => {
             const user = row.original
 
             return (
@@ -92,7 +71,7 @@ export const columns: ColumnDef<User>[] = [
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(user.id)}
+                            onClick={() => navigator.clipboard.writeText(user?.id)}
                         >
                             Copy payment ID
                         </DropdownMenuItem>
@@ -103,5 +82,5 @@ export const columns: ColumnDef<User>[] = [
                 </DropdownMenu>
             )
         },
-    }
+    },
 ]

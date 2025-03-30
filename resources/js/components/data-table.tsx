@@ -1,14 +1,14 @@
 import {
     ColumnDef,
     ColumnFiltersState,
-    flexRender,
-    VisibilityState,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
     SortingState,
-    useReactTable,
+    VisibilityState,
+    flexRender,
+    getCoreRowModel,
+    getSortedRowModel,
+    getPaginationRowModel,
+    getFilteredRowModel,
+    useReactTable
 } from "@tanstack/react-table"
 
 import {
@@ -17,14 +17,15 @@ import {
     TableCell,
     TableHead,
     TableHeader,
-    TableRow,
-} from "@/components/ui/table"
+    TableFooter,
+    TableRow
+} from "@/components/ui/table";
 
-import { Input } from "./ui/input"
-import { Button } from "./ui/button"
+import { Input } from "@/components/ui/input"
+import React from "react";
+import { DataTablePagination } from "@/components/data-table-pagination";
+import { DataTableViewOptions } from "@/components/data-table-view-options";
 
-import React from "react"
-import { DataTablePagination } from "./data-table-pagination"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -35,22 +36,19 @@ export function DataTable<TData, TValue>({
     columns,
     data,
 }: DataTableProps<TData, TValue>) {
-    const [sorting, setSorting] = React.useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-        []
-    )
-
-    const [columnVisibility, setColumnVisibility] =
-        React.useState<VisibilityState>({})
+    const [sorting, setSorting] = React.useState<SortingState>([]);
+    const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+    const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
 
     const table = useReactTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
         onColumnFiltersChange: setColumnFilters,
-        getPaginationRowModel: getPaginationRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
         onRowSelectionChange: setRowSelection,
@@ -58,12 +56,12 @@ export function DataTable<TData, TValue>({
             sorting,
             columnFilters,
             columnVisibility,
-            rowSelection,
-        },
+            rowSelection
+        }
     })
 
     return (
-        <div className="w-full">
+        <div>
             <div className="flex items-center py-4">
                 <Input
                     placeholder="Filter emails..."
@@ -73,6 +71,9 @@ export function DataTable<TData, TValue>({
                     }
                     className="max-w-sm"
                 />
+
+                <DataTableViewOptions table={table} />
+
             </div>
             <div className="rounded-md border">
                 <Table>
@@ -82,12 +83,10 @@ export function DataTable<TData, TValue>({
                                 {headerGroup.headers.map((header) => {
                                     return (
                                         <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
+                                            {header.isPlaceholder ? null : flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
                                         </TableHead>
                                     )
                                 })}
@@ -118,7 +117,6 @@ export function DataTable<TData, TValue>({
                     </TableBody>
                 </Table>
             </div>
-
             <div className="space-x-2 py-4">
                 <DataTablePagination table={table} />
             </div>
