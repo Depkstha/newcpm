@@ -5,4 +5,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix("users")->as()->middleware('auth')->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('user.index');
+    Route::get('/create', [UserController::class, 'create'])->name('user.create');
 });

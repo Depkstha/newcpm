@@ -25,6 +25,9 @@ import { Input } from "@/components/ui/input"
 import React from "react";
 import { DataTablePagination } from "@/components/data-table-pagination";
 import { DataTableViewOptions } from "@/components/data-table-view-options";
+import { Button } from "./ui/button";
+import { Link } from "@inertiajs/react";
+import { ArrowUpDown, Plus } from "lucide-react";
 
 
 interface DataTableProps<TData, TValue> {
@@ -62,7 +65,7 @@ export function DataTable<TData, TValue>({
 
     return (
         <div>
-            <div className="flex items-center py-4">
+            <div className="flex gap-2 items-center py-4">
                 <Input
                     placeholder="Filter emails..."
                     value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
@@ -71,6 +74,13 @@ export function DataTable<TData, TValue>({
                     }
                     className="max-w-sm"
                 />
+
+                <Link href="/user/create" prefetch className="flex items-center space-x-2">
+                    <Button>
+                        Create
+                        <Plus className="ml-2 h-4 w-4" />
+                    </Button>
+                </Link>
 
                 <DataTableViewOptions table={table} />
 

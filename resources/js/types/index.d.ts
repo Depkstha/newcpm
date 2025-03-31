@@ -17,10 +17,16 @@ export interface NavGroup {
 }
 
 export interface NavItem {
+    type: "item" | "group";
     title: string;
     href: string;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    items?:
+    {
+        title: string,
+        href: string,
+    }[]
 }
 
 export interface SharedData {
@@ -43,7 +49,7 @@ export interface User {
 }
 
 export interface DataTableColumnHeaderProps<TData, TValue>
-extends React.HTMLAttributes<HTMLDivElement> {
-column: Column<TData, TValue>
-title: string
+    extends React.HTMLAttributes<HTMLDivElement> {
+    column: Column<TData, TValue>
+    title: string
 }
