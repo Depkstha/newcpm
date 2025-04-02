@@ -17,14 +17,14 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const Page = ({ users }: { users: User[] }) => {
+const Page = ({ users, status }: { users: User[]; status: string }) => {
     return (
         <UserProvider>
             <AppLayout breadcrumbs={breadcrumbs}>
                 <Head title="Users" />
                 <div className="flex h-full flex-col gap-4 rounded-xl p-4">
                     <div className="flex justify-end">
-                        <UserForm />
+                        <UserForm status={status} />
                     </div>
                     <DataTable columns={columns} data={users} />
                 </div>

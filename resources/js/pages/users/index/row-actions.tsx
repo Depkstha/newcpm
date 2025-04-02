@@ -12,7 +12,7 @@ import { MoreHorizontal, PenLine, Trash2, UserX } from 'lucide-react';
 import { useUser } from '../user-context';
 
 function RowActions({ user }: { user: User }) {
-    const { setOpen } = useUser();
+    const { setOpen, setIsDeleteDialogOpen } = useUser();
 
     return (
         <DropdownMenu>
@@ -29,7 +29,7 @@ function RowActions({ user }: { user: User }) {
                     Edit
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true, user)}>
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete
                 </DropdownMenuItem>

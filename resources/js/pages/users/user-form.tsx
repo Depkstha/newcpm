@@ -23,7 +23,7 @@ interface UserFormProps {
 export default function UserForm({ status }: UserFormProps) {
     const { open, selectedUser, setOpen } = useUser();
 
-    const { data, setData, post, put, processing, errors, reset } = useForm<Required<UserForm>>({
+    const { data, setData, post, put, processing, errors, reset, clearErrors } = useForm<Required<UserForm>>({
         name: '',
         email: '',
         password: '',
@@ -37,9 +37,10 @@ export default function UserForm({ status }: UserFormProps) {
                 password: '',
             });
         } else {
-            reset('name', 'email', 'password');
+            clearErrors();
+            reset();
         }
-    }, [open, selectedUser, setData, reset]);
+    }, [open, selectedUser, setData, reset, clearErrors]);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -50,7 +51,7 @@ export default function UserForm({ status }: UserFormProps) {
         method(route(routeName, selectedUser?.id), {
             preserveScroll: true,
             onSuccess: () => {
-                reset('name', 'email', 'password');
+                reset();
                 setOpen(false, null);
 
                 toast.success(`User successfully ${selectedUser ? 'updated' : 'created'}.`, {
@@ -61,6 +62,17 @@ export default function UserForm({ status }: UserFormProps) {
                         day: 'numeric',
                     }),
                 });
+            },
+            onError: (error) => {
+                toast.error('Failed to perform!', {
+                    description: new Date().toLocaleDateString(undefined, {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                    }),
+                });
+                console.log(error);
             },
         });
     };
