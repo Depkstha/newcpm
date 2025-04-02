@@ -2,6 +2,8 @@ import { Column } from '@tanstack/react-table';
 import { LucideIcon } from 'lucide-react';
 import type { Config } from 'ziggy-js';
 
+type FormType = "sign-in" | "sign-up";
+
 export interface Auth {
     user: User;
 }

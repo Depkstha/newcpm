@@ -1,8 +1,10 @@
-import { BreadcrumbItem, SharedData, User } from "@/types";
-import { columns } from "./columns"
-import { DataTable } from "@/components/data-table"
-import AppLayout from "@/layouts/app-layout";
-import { Head, usePage } from "@inertiajs/react";
+import { DataTable } from '@/components/data-table';
+import AppLayout from '@/layouts/app-layout';
+import { BreadcrumbItem, User } from '@/types';
+import { Head } from '@inertiajs/react';
+import { UserProvider } from '../user-context';
+import UserForm from '../user-form';
+import { columns } from './columns';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -16,15 +18,19 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const Page = ({ users }: { users: User[] }) => {
-    const { auth } = usePage<SharedData>().props;
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Users" />
-            <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                <DataTable columns={columns} data={users} />
-            </div>
-        </AppLayout>
-    )
-}
+        <UserProvider>
+            <AppLayout breadcrumbs={breadcrumbs}>
+                <Head title="Users" />
+                <div className="flex h-full flex-col gap-4 rounded-xl p-4">
+                    <div className="flex justify-end">
+                        <UserForm />
+                    </div>
+                    <DataTable columns={columns} data={users} />
+                </div>
+            </AppLayout>
+        </UserProvider>
+    );
+};
 
-export default Page
+export default Page;

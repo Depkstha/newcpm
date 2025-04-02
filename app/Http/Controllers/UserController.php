@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserStatus;
 use App\Interfaces\UserInterface;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -14,9 +17,7 @@ class UserController extends Controller
      * Display a listing of the resource.
      */
 
-    public function __construct(public UserInterface $user) {
-
-    }
+    public function __construct(public UserInterface $user) {}
 
     public function index(Request $request): Response
     {
@@ -32,7 +33,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        return Inertia::render('users/user-form');
+        //
     }
 
     /**
@@ -40,7 +41,18 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            "name" => ["required", "string", "min:3", "max:255"],
+            "email" => ["required", "email", "unique:users"],
+            "password" => ["required"],
+            "status" => ["nullable", Rule::enum(UserStatus::class)]
+        ]);
+
+        $validated["password"] = Hash::make($request->password);
+
+        $user = $this->user->create($validated);
+
+        return back();
     }
 
     /**
@@ -64,7 +76,24 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+        $validated = $request->validate([
+            "name" => ["required", "string", "min:3", "max:255"],
+            "email" => [
+                "required",
+                "email",
+                Rule::unique("users")->ignore($user->id),
+            ],
+            "avatar" => ["nullable", "image", "mimes:jpg,png,jpeg,webp", "size:5120"],
+            "status" => ["nullable", Rule::enum(UserStatus::class)]
+        ]);
+
+        if ($request->filled("password")) {
+            $validated["password"] = Hash::make($request->password);
+        }
+
+        $user = $this->user->update($user->id, $validated);
+
+        return back();
     }
 
     /**

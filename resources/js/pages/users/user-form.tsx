@@ -1,86 +1,115 @@
-import { Head, useForm } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
-import { FormEventHandler } from 'react';
+import { useForm } from '@inertiajs/react';
+import { LoaderCircle, Plus } from 'lucide-react';
+import { FormEventHandler, useEffect } from 'react';
 
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem } from '@/types';
+import { toast } from 'sonner';
+import { useUser } from './user-context';
 
-type CreateUserForm = {
+type UserForm = {
     name: string;
     email: string;
-    password: string;
-    password_confirmation: string;
+    password?: string;
 };
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/dashboard',
-    },
-    {
-        title: 'Users',
-        href: '/users',
-    },
-    {
-        title: 'Create',
-        href: '/users/create',
-    },
-];
+interface UserFormProps {
+    status?: string;
+}
 
-export default function CreateUser() {
-    const { data, setData, post, processing, errors, reset } = useForm<Required<CreateUserForm>>({
+export default function UserForm({ status }: UserFormProps) {
+    const { open, selectedUser, setOpen } = useUser();
+
+    const { data, setData, post, put, processing, errors, reset } = useForm<Required<UserForm>>({
         name: '',
         email: '',
         password: '',
-        password_confirmation: '',
     });
+
+    useEffect(() => {
+        if (open && selectedUser) {
+            setData({
+                name: selectedUser?.name || '',
+                email: selectedUser?.email || '',
+                password: '',
+            });
+        } else {
+            reset('name', 'email', 'password');
+        }
+    }, [open, selectedUser, setData, reset]);
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('users.store'), {
-            onFinish: () => reset('name', 'email', 'password', 'password_confirmation'),
+
+        const method = selectedUser ? put : post;
+        const routeName = selectedUser ? 'user.update' : 'user.store';
+
+        method(route(routeName, selectedUser?.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                reset('name', 'email', 'password');
+                setOpen(false, null);
+
+                toast.success(`User successfully ${selectedUser ? 'updated' : 'created'}.`, {
+                    description: new Date().toLocaleDateString(undefined, {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                    }),
+                });
+            },
         });
     };
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create user" />
-            <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
-                <form onSubmit={submit}>
+        <Dialog open={open} onOpenChange={() => setOpen(!open, null)}>
+            <DialogTrigger asChild>
+                <Button>
+                    Create
+                    <Plus className="ml-2 h-4 w-4" />
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>{selectedUser ? 'Edit User' : 'Create User'}</DialogTitle>
+                    <DialogDescription>{selectedUser ? 'Update the user details here.' : 'Create a new user here.'}</DialogDescription>
+                </DialogHeader>
+                <form className="flex flex-col gap-6" onSubmit={submit}>
                     <div className="grid gap-6">
-
                         <div className="grid gap-2">
                             <Label htmlFor="name">Name</Label>
                             <Input
                                 id="name"
                                 type="name"
-                                name="name"
+                                required
+                                autoFocus
+                                tabIndex={1}
                                 autoComplete="name"
                                 value={data.name}
-                                className="mt-1 block w-full"
-                                readOnly
                                 onChange={(e) => setData('name', e.target.value)}
+                                placeholder="Full Name"
                             />
-                            <InputError message={errors.name} className="mt-2" />
+                            <InputError message={errors.name} />
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email">Email address</Label>
                             <Input
                                 id="email"
                                 type="email"
-                                name="email"
-                                autoComplete="email"
+                                required
+                                autoFocus
+                                tabIndex={1}
+                                autoComplete="new-email"
                                 value={data.email}
-                                className="mt-1 block w-full"
-                                readOnly
                                 onChange={(e) => setData('email', e.target.value)}
+                                placeholder="Email Address"
                             />
-                            <InputError message={errors.email} className="mt-2" />
+                            <InputError message={errors.email} />
                         </div>
 
                         <div className="grid gap-2">
@@ -88,39 +117,30 @@ export default function CreateUser() {
                             <Input
                                 id="password"
                                 type="password"
-                                name="password"
+                                required={!selectedUser}
+                                tabIndex={2}
                                 autoComplete="new-password"
                                 value={data.password}
-                                className="mt-1 block w-full"
-                                autoFocus
                                 onChange={(e) => setData('password', e.target.value)}
                                 placeholder="Password"
                             />
                             <InputError message={errors.password} />
                         </div>
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="password_confirmation">Confirm password</Label>
-                            <Input
-                                id="password_confirmation"
-                                type="password"
-                                name="password_confirmation"
-                                autoComplete="new-password"
-                                value={data.password_confirmation}
-                                className="mt-1 block w-full"
-                                onChange={(e) => setData('password_confirmation', e.target.value)}
-                                placeholder="Confirm password"
-                            />
-                            <InputError message={errors.password_confirmation} className="mt-2" />
+                        <div className="mt-4 flex justify-end space-x-2">
+                            <Button type="button" variant="outline" onClick={() => setOpen(false, null)}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" tabIndex={4} disabled={processing}>
+                                {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                                {selectedUser ? 'Update' : 'Create'}
+                            </Button>
                         </div>
-
-                        <Button type="submit" className="mt-4 w-full" disabled={processing}>
-                            {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                            Reset password
-                        </Button>
                     </div>
                 </form>
-            </div>
-        </AppLayout>
+
+                {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
+            </DialogContent>
+        </Dialog>
     );
 }

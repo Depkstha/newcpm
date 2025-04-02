@@ -11,6 +11,17 @@ interface AppLayoutProps {
 export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => (
     <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
         {children}
-        <Toaster />
+        <Toaster
+            closeButton
+            richColors
+            position="bottom-right"
+            duration={4000}
+            visibleToasts={3}
+            toastOptions={{
+                style: {
+                    fontFamily: 'inherit',
+                },
+            }}
+        />
     </AppLayoutTemplate>
 );

@@ -33,7 +33,7 @@ class UserRepository implements UserInterface
             return $baseQuery->paginate($limit);
         }
 
-        return $baseQuery->get();
+        return $baseQuery->latest()->get();
     }
 
 
@@ -57,16 +57,15 @@ class UserRepository implements UserInterface
 
     public function create(array $data)
     {
-        $employee = User::create($data);
-        return $employee;
+        return User::create($data);
     }
 
     public function update($id, array $data)
-{
-    return tap($this->findById($id), function ($employee) use ($data) {
-        $employee->update($data);
-    });
-}
+    {
+        return tap($this->findById($id), function ($employee) use ($data) {
+            $employee->update($data);
+        });
+    }
 
 
     public function pluck(?callable $query = null)
