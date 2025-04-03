@@ -9,7 +9,7 @@ type UserContextType = {
     userToDelete: User | null;
     setOpen: (state: boolean | false, user: User | null) => void;
     setSelectedUser: (user: User | null) => void;
-    setIsDeleteDialogOpen: (state: boolean | false, user: User | null) => void;
+    setIsDeleteDialogOpen: (stateone: boolean | false, user: User | null) => void;
     setUserToDelete: (user: User | null) => void;
 };
 
@@ -41,10 +41,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         });
     };
 
-    const handleDelete = (state: boolean, user: User | null = null) => {
+    const handleDelete = (stateone: boolean, user: User | null = null) => {
         startTransition(() => {
             setUserToDelete(user);
-            setIsDeleteDialogOpen(state);
+            setIsDeleteDialogOpen(stateone);
         });
     };
 

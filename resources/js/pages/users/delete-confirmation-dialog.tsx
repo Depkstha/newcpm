@@ -9,6 +9,7 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useUser } from '@/pages/users/user-context';
+import { User } from '@/types';
 import { useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
 
@@ -17,28 +18,23 @@ interface ConfirmationDialogProps {
     description?: string;
     cancelText?: string;
     confirmText?: string;
-    triggerText?: string;
-    triggerVariant?: 'destructive' | 'outline';
-    routeName: string;
-    method: 'delete' | 'put' | 'patch';
+    triggerVariant?: 'destructive';
 }
 
-const ConfirmationDialog = ({
+const DeleteConfirmationDialog = ({
     title = 'Are you sure?',
-    description = 'This action cannot be undone. This will permanently delete the record.',
+    description = 'This action cannot be undone. This will permanently delete the user.',
     cancelText = 'Cancel',
-    confirmText = 'Continue',
+    confirmText = 'Delete',
 }: ConfirmationDialogProps) => {
     const { isDeleteDialogOpen, setIsDeleteDialogOpen, userToDelete } = useUser();
-
     const { processing, cancel, reset, delete: destroy, clearErrors } = useForm();
 
-    const handleConfirm = (e) => {
+    const handleConfirm = (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        destroy(route('user.delete', userToDelete?.id!), {
+        destroy(route('user.destroy', (userToDelete as User).id), {
             preserveScroll: true,
             onSuccess: () => {
-                reset();
                 setIsDeleteDialogOpen(false, null);
                 toast.success(`User successfully deleted.`, {
                     description: new Date().toLocaleDateString(undefined, {
@@ -48,6 +44,7 @@ const ConfirmationDialog = ({
                         day: 'numeric',
                     }),
                 });
+                reset();
             },
             onError: (error) => {
                 toast.error('Failed to perform!', {
@@ -87,4 +84,4 @@ const ConfirmationDialog = ({
     );
 };
 
-export default ConfirmationDialog;
+export default DeleteConfirmationDialog;

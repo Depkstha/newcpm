@@ -8,7 +8,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { User } from '@/types';
-import { MoreHorizontal, PenLine, Trash2, UserX } from 'lucide-react';
+import { MoreHorizontal, PenLine, Trash2 } from 'lucide-react';
 import { useUser } from '../user-context';
 
 function RowActions({ user }: { user: User }) {
@@ -32,11 +32,6 @@ function RowActions({ user }: { user: User }) {
                 <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true, user)}>
                     <Trash2 className="mr-2 h-4 w-4" />
                     Delete
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    <UserX className="mr-2 h-4 w-4" />
-                    Deactivate
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

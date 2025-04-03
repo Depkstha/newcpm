@@ -1,5 +1,6 @@
 import { DataTable } from '@/components/data-table';
 import AppLayout from '@/layouts/app-layout';
+import DeleteConfirmationDialog from '@/pages/users/delete-confirmation-dialog';
 import { BreadcrumbItem, User } from '@/types';
 import { Head } from '@inertiajs/react';
 import { UserProvider } from '../user-context';
@@ -26,7 +27,9 @@ const Page = ({ users, status }: { users: User[]; status: string }) => {
                     <div className="flex justify-end">
                         <UserForm status={status} />
                     </div>
+
                     <DataTable columns={columns} data={users} />
+                    <DeleteConfirmationDialog />
                 </div>
             </AppLayout>
         </UserProvider>
