@@ -50,6 +50,25 @@ export interface User {
     [key: string]: unknown; // This allows for additional properties...
 }
 
+export interface Role {
+    id: number;
+    name: string;
+    guard_name: string;
+    created_at: string;
+    updated_at: string;
+    [key: string]: unknown;
+}
+
+export interface Permission {
+    id: number;
+    name: string;
+    created_at: string;
+    updated_at: string;
+    [key: string]: unknown;
+}
+
+type FormType = "create" | "edit";
+
 export interface DataTableColumnHeaderProps<TData, TValue>
     extends React.HTMLAttributes<HTMLDivElement> {
     column: Column<TData, TValue>

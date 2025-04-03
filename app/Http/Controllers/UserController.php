@@ -17,7 +17,7 @@ class UserController extends Controller
      * Display a listing of the resource.
      */
 
-    public function __construct(public UserInterface $user) {}
+    public function __construct(private UserInterface $user) {}
 
     public function index(Request $request): Response
     {
